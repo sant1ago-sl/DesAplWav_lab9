@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, User } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function Header() {
@@ -13,6 +13,11 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const scrollTo = (id: string) => {
+    const element = document.getElementById(id);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
     <header 
       className={cn(
@@ -21,45 +26,47 @@ export default function Header() {
       )}
     >
       <div className="flex items-center gap-12">
-        <div className="font-serif text-2xl md:text-3xl tracking-tighter text-on-background uppercase font-bold cursor-pointer">
+        <div 
+          onClick={() => scrollTo('hero')}
+          className="font-serif text-2xl md:text-3xl tracking-tighter text-on-background uppercase font-bold cursor-pointer hover:text-primary transition-colors"
+        >
           CineNoir
         </div>
-        <nav className="hidden md:flex gap-8">
+        <nav className="hidden md:flex gap-10">
           {[
-            { name: 'Premieres', path: '#' },
-            { name: 'Genres', path: '#' }
+            { name: 'Inicio', id: 'hero' },
+            { name: 'Películas', id: 'catalog' }
           ].map((item) => (
-            <a 
+            <button 
               key={item.name}
-              href={item.path} 
+              onClick={() => scrollTo(item.id)} 
               className={cn(
-                "text-[10px] font-bold tracking-widest uppercase transition-all duration-300 hover:text-primary text-white/60"
+                "text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:text-primary text-white/60"
               )}
             >
               {item.name}
-            </a>
+            </button>
           ))}
         </nav>
       </div>
       <div className="flex items-center gap-6">
-        <div className="hidden md:flex items-center bg-white/5 px-4 py-2 rounded-full border border-white/10 group focus-within:border-primary/50 transition-all">
+        <div className="hidden md:flex items-center bg-white/5 px-6 py-2.5 rounded-full border border-white/10 group focus-within:border-primary/50 transition-all">
           <Search className="w-4 h-4 text-white/40 group-focus-within:text-primary transition-colors" />
           <input 
             type="text" 
-            placeholder="Search films..." 
-            className="bg-transparent border-none focus:ring-0 text-sm px-2 w-40 placeholder:text-white/20 outline-none"
+            placeholder="Buscar películas..." 
+            className="bg-transparent border-none focus:ring-0 text-xs px-3 w-48 placeholder:text-white/20 outline-none font-medium"
             readOnly
-            onClick={() => {
-                const searchSection = document.getElementById('search-section');
-                searchSection?.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={() => scrollTo('catalog')}
           />
         </div>
-        <button className="text-white hover:text-primary transition-colors">
+        <button 
+          onClick={() => scrollTo('catalog')}
+          className="text-white hover:text-primary transition-colors"
+        >
           <Search className="md:hidden w-5 h-5" />
         </button>
       </div>
-
     </header>
   )
 }

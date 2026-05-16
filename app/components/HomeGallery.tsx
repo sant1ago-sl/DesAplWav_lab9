@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Search, ChevronLeft, ChevronRight, Ticket, ArrowRight, Play } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Ticket, ArrowRight, Filter, SlidersHorizontal } from 'lucide-react'
 import MovieCard from './MovieCard'
 import MovieDetails from './MovieDetails'
 import { cn } from '@/lib/utils'
@@ -20,10 +20,10 @@ interface HomeGalleryProps {
 }
 
 const GENRES = [
-  { id: 'all', name: 'All Masterpieces', query: 'marvel' },
-  { id: 'noir', name: 'Film Noir', query: 'detective' },
-  { id: 'sci-fi', name: 'Sci-Fi', query: 'interstellar' },
-  { id: 'action', name: 'Action', query: 'john wick' },
+  { id: 'all', name: 'Todos', query: 'noir' },
+  { id: 'noir', name: 'Cine Negro', query: 'detective' },
+  { id: 'sci-fi', name: 'Ciencia Ficción', query: 'interstellar' },
+  { id: 'action', name: 'Acción', query: 'john wick' },
   { id: 'drama', name: 'Drama', query: 'godfather' }
 ]
 
@@ -66,7 +66,7 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
 
   // Genre logic
   useEffect(() => {
-    if (selectedGenre === 'all') {
+    if (selectedGenre === 'all' && !query) {
       setGenreMovies(initialMovies)
       return
     }
@@ -85,7 +85,7 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
       }
     }
     fetchByGenre()
-  }, [selectedGenre, initialMovies])
+  }, [selectedGenre, initialMovies, query])
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -94,193 +94,177 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
     }
   }
 
-  const heroMovie = initialMovies[0]
-
   return (
     <div className="bg-background">
-      {/* Hero Section */}
-      <section className="relative h-screen w-full flex items-center px-8 md:px-16 overflow-hidden">
+      {/* Hero Section - Presentation */}
+      <section id="hero" className="relative h-screen w-full flex items-center px-8 md:px-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=2000" 
             alt="Hero Cinematic"
-            className="w-full h-full object-cover grayscale-[0.4] contrast-125 brightness-[0.3]"
+            className="w-full h-full object-cover grayscale-[0.4] contrast-125 brightness-[0.25]"
           />
           <div className="absolute inset-0 cinematic-gradient" />
         </div>
         
-        <div className="relative z-10 max-w-4xl">
-          <motion.span 
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            className="text-[10px] font-bold tracking-[0.3em] text-secondary mb-6 block uppercase"
+        <div className="relative z-10 max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4 mb-8"
           >
-            Now Premiering
-          </motion.span>
+            <div className="w-12 h-[1px] bg-primary"></div>
+            <span className="text-[10px] font-bold tracking-[0.4em] text-primary uppercase">Estética del Siglo XXI</span>
+          </motion.div>
+
           <motion.h1 
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 40, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="font-serif text-5xl md:text-8xl text-white mb-8 leading-[1.1] tracking-tight"
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="font-serif text-6xl md:text-[10rem] text-white mb-10 leading-[0.9] tracking-tighter"
           >
-            {heroMovie?.Title || "Cinema is an act of seeing."}
+            CineNoir
           </motion.h1>
+
           <motion.p 
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-white/60 mb-12 max-w-xl font-light leading-relaxed"
+            transition={{ delay: 0.3 }}
+            className="text-xl md:text-2xl text-white/40 mb-16 max-w-2xl font-light leading-relaxed italic"
           >
-            Experience the latest cinematic milestones. From noir classics to contemporary avant-garde premieres, curated for the visionary soul.
+            "El cine no es un arte que filma vida, el cine está entre el arte y la vida."
+            <span className="block mt-4 text-xs font-bold uppercase tracking-widest not-italic text-white/20">— Jean-Luc Godard</span>
           </motion.p>
           
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4 }}
             className="flex flex-wrap items-center gap-8"
           >
             <button 
-              onClick={() => {
-                  const searchSection = document.getElementById('search-section');
-                  searchSection?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="bg-primary text-on-primary px-10 py-5 rounded-xl text-[10px] font-bold tracking-widest uppercase hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
+              onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-primary text-on-primary px-12 py-6 rounded-xl text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
             >
-              Explore Catalog
-            </button>
-            <button 
-              onClick={() => setSelectedId(heroMovie?.imdbID)}
-              className="group flex items-center gap-4 text-white hover:text-primary transition-all"
-            >
-              <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md group-hover:bg-white group-hover:text-background transition-all">
-                <Play className="w-6 h-6 fill-current" />
-              </div>
-              <span className="text-[10px] font-bold tracking-widest uppercase">View Details</span>
+              Explorar Catálogo
             </button>
           </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+        >
+            <span className="text-[8px] font-bold tracking-[0.4em] text-white/20 uppercase">Scroll</span>
+            <div className="w-[1px] h-12 bg-gradient-to-b from-primary to-transparent"></div>
+        </motion.div>
       </section>
 
-      {/* Genres & Search Section */}
-      <section id="search-section" className="py-32 px-8 md:px-16 scroll-mt-20">
-        <div className="max-w-4xl mx-auto mb-20">
-            <div className="text-center mb-16">
-                <span className="text-[10px] font-bold tracking-widest text-primary mb-3 block uppercase">Curated Collections</span>
-                <h2 className="font-serif text-3xl md:text-5xl text-white font-bold tracking-tight mb-12">Browse by Genre</h2>
-                
-                {/* Genre Pills */}
-                <div className="flex flex-wrap justify-center gap-4 mb-16">
-                    {GENRES.map((genre) => (
-                        <button
-                            key={genre.id}
-                            onClick={() => setSelectedGenre(genre.id)}
-                            className={cn(
-                                "px-8 py-3 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border",
-                                selectedGenre === genre.id 
-                                    ? "bg-primary text-on-primary border-primary shadow-lg shadow-primary/20" 
-                                    : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
-                            )}
-                        >
-                            {genre.name}
-                        </button>
-                    ))}
+      {/* Catalog Section - Películas Disponibles */}
+      <section id="catalog" className="py-40 px-8 md:px-16 scroll-mt-20">
+        <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+                <div className="max-w-2xl">
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-primary mb-4 block uppercase opacity-60">Archivo Curado</span>
+                    <h2 className="font-serif text-4xl md:text-6xl text-white font-bold tracking-tight">Películas Disponibles</h2>
+                    <p className="mt-6 text-white/40 font-light leading-relaxed">
+                        Una selección manual de hitos cinematográficos, desde clásicos del noir hasta estrenos vanguardistas contemporáneos.
+                    </p>
                 </div>
 
-                <div className="relative group max-w-2xl mx-auto">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
-                    <input 
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Or search by title..."
-                        className="w-full bg-white/5 border border-white/10 focus:border-primary/50 rounded-2xl py-6 pl-16 pr-6 text-white placeholder:text-white/20 outline-none transition-all text-lg font-light"
-                    />
-                    {loading && (
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/10 border-t-primary"></div>
-                        </div>
-                    )}
+                {/* Professional Filter Bar */}
+                <div className="flex flex-col gap-6 w-full md:w-auto">
+                    <div className="flex items-center gap-4 text-[10px] font-bold tracking-widest text-white/20 uppercase mb-2">
+                        <SlidersHorizontal className="w-3 h-3" />
+                        Filtrar por Género
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        {GENRES.map((genre) => (
+                            <button
+                                key={genre.id}
+                                onClick={() => setSelectedGenre(genre.id)}
+                                className={cn(
+                                    "px-6 py-3 rounded-xl text-[10px] font-bold tracking-widest uppercase transition-all border",
+                                    selectedGenre === genre.id 
+                                        ? "bg-white text-background border-white shadow-xl" 
+                                        : "bg-surface-container/40 text-white/40 border-white/5 hover:border-white/20 hover:text-white"
+                                )}
+                            >
+                                {genre.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <AnimatePresence mode="wait">
-            <motion.div 
-                key={query ? 'search' : selectedGenre}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8"
-            >
-                {(query ? searchResults : genreMovies).map((movie) => (
-                    <MovieCard 
-                        key={movie.imdbID} 
-                        movie={movie} 
-                        onClick={(id) => setSelectedId(id)}
-                    />
-                ))}
-                {(query ? searchResults : genreMovies).length === 0 && !loading && (
-                    <div className="col-span-full text-center py-20 border border-white/5 rounded-3xl bg-white/[0.02]">
-                        <p className="text-white/40 text-sm font-light uppercase tracking-widest">No masterpieces found in this category</p>
+            {/* Integrated Search Bar */}
+            <div className="relative group max-w-xl mb-24">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
+                <input 
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Buscar por título en el archivo..."
+                    className="w-full bg-surface-container/20 border border-white/5 focus:border-primary/30 rounded-2xl py-5 pl-14 pr-6 text-white placeholder:text-white/10 outline-none transition-all text-sm font-light"
+                />
+                {loading && (
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/10 border-t-primary"></div>
                     </div>
                 )}
-            </motion.div>
-        </AnimatePresence>
+            </div>
+
+            {/* Movies Grid */}
+            <AnimatePresence mode="wait">
+                <motion.div 
+                    key={query ? 'search' : selectedGenre}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10"
+                >
+                    {(query ? searchResults : genreMovies).map((movie) => (
+                        <MovieCard 
+                            key={movie.imdbID} 
+                            movie={movie} 
+                            onClick={(id) => setSelectedId(id)}
+                        />
+                    ))}
+                    {(query ? searchResults : genreMovies).length === 0 && !loading && (
+                        <div className="col-span-full text-center py-40 border border-white/5 rounded-[3rem] bg-surface-container/10">
+                            <p className="text-white/20 text-xs font-bold uppercase tracking-[0.3em]">No se han encontrado obras en esta categoría</p>
+                        </div>
+                    )}
+                </motion.div>
+            </AnimatePresence>
+        </div>
       </section>
 
-      {/* Trending Section (Horizontal Scroll) */}
-      {!query && selectedGenre === 'all' && (
-        <section className="py-32 border-t border-white/5">
-            <div className="px-8 md:px-16 flex justify-between items-end mb-12">
+      {/* Editorial Section - Added for Professional look */}
+      <section className="py-32 px-8 md:px-16 border-t border-white/5">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="relative aspect-video rounded-[3rem] overflow-hidden group">
+                <img 
+                    src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=1000" 
+                    className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-105"
+                    alt="Editorial"
+                />
+                <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+            </div>
             <div>
-                <span className="text-[10px] font-bold tracking-widest text-primary mb-3 block uppercase">SSR Performance</span>
-                <h2 className="font-serif text-3xl md:text-4xl text-white font-bold tracking-tight">Trending Now</h2>
-            </div>
-            <div className="flex gap-4">
-                <button onClick={() => handleScroll('left')} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-white">
-                <ChevronLeft className="w-6 h-6" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-secondary mb-6 block uppercase">Membresía CineNoir</span>
+                <h3 className="font-serif text-4xl md:text-5xl text-white mb-8 leading-tight">Únete al club de los visionarios.</h3>
+                <p className="text-white/60 font-light leading-relaxed mb-12 text-lg">
+                    Accede a proyecciones exclusivas, ensayos críticos y una comunidad dedicada a la preservación de la excelencia cinematográfica.
+                </p>
+                <button className="group flex items-center gap-4 text-xs font-bold tracking-widest uppercase text-white hover:text-primary transition-all">
+                    Saber más sobre la membresía 
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
                 </button>
-                <button onClick={() => handleScroll('right')} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors text-white">
-                <ChevronRight className="w-6 h-6" />
-                </button>
             </div>
-            </div>
-
-            <div 
-                ref={scrollRef}
-                className="flex gap-8 px-8 md:px-16 overflow-x-auto hide-scrollbar pb-12 cursor-grab active:cursor-grabbing"
-            >
-            {initialMovies.map((movie) => (
-                <div key={movie.imdbID} className="w-[300px] flex-none">
-                    <MovieCard 
-                        movie={movie} 
-                        onClick={(id) => setSelectedId(id)}
-                    />
-                </div>
-            ))}
-            </div>
-        </section>
-      )}
-
-      {/* Weekly Journal Section */}
-      <section className="px-8 md:px-16 py-32 border-t border-white/5">
-        <div className="max-w-4xl mx-auto glass rounded-[2rem] p-12 md:p-20 flex flex-col justify-center text-center items-center">
-          <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mb-8">
-            <Ticket className="text-secondary w-8 h-8" />
-          </div>
-          <h4 className="font-serif text-3xl md:text-4xl text-white mb-4 font-bold tracking-tight">Weekly Journal</h4>
-          <p className="text-lg text-white/60 mb-10 font-light leading-relaxed max-w-xl">Curated film essays and industry insights delivered to your inbox every Sunday.</p>
-          <div className="relative w-full max-w-md">
-            <input 
-              type="email" 
-              placeholder="email@example.com"
-              className="w-full bg-transparent border-b border-white/10 focus:border-primary focus:ring-0 px-0 py-4 text-white placeholder:text-white/20 transition-colors outline-none"
-            />
-            <button className="absolute right-0 top-1/2 -translate-y-1/2 text-primary hover:text-white transition-colors">
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
         </div>
       </section>
 
