@@ -7,6 +7,8 @@ import MovieCard from './MovieCard'
 import MovieDetails from './MovieDetails'
 import { cn } from '@/lib/utils'
 
+import Logo from './Logo'
+
 interface Movie {
   Title: string;
   Year: string;
@@ -98,6 +100,7 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
     <div className="bg-background">
       {/* Hero Section - Presentation */}
       <section id="hero" className="relative h-screen w-full flex items-center px-8 md:px-16 overflow-hidden">
+        {/* Background Elements */}
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=2000" 
@@ -105,7 +108,13 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
             className="w-full h-full object-cover grayscale-[0.4] contrast-125 brightness-[0.25]"
           />
           <div className="absolute inset-0 cinematic-gradient" />
+          
+          {/* Integrated Watermark Logo */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/4 -translate-y-1/2 w-[80vh] h-[80vh] text-primary/5 pointer-events-none rotate-12">
+            <Logo className="w-full h-full" />
+          </div>
         </div>
+
         
         <div className="relative z-10 max-w-5xl">
           <motion.div

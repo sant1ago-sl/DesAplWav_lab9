@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+import Logo from './Logo'
+
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -28,10 +30,14 @@ export default function Header() {
       <div className="flex items-center gap-12">
         <div 
           onClick={() => scrollTo('hero')}
-          className="font-serif text-2xl md:text-3xl tracking-tighter text-on-background uppercase font-bold cursor-pointer hover:text-primary transition-colors"
+          className="flex items-center gap-3 cursor-pointer group"
         >
-          CineNoir
+          <Logo className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
+          <div className="font-serif text-2xl md:text-3xl tracking-tighter text-on-background uppercase font-bold group-hover:text-primary transition-colors">
+            CineNoir
+          </div>
         </div>
+
         <nav className="hidden md:flex gap-10">
           {[
             { name: 'Inicio', id: 'hero' },
