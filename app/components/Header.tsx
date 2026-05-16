@@ -58,10 +58,8 @@ export default function Header() {
         <button className="text-white hover:text-primary transition-colors">
           <Search className="md:hidden w-5 h-5" />
         </button>
-        <button className="text-white hover:text-primary transition-colors">
-          <User className="w-5 h-5" />
-        </button>
       </div>
+
     </header>
   )
 }

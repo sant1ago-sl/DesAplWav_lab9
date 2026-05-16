@@ -134,13 +134,14 @@ export default function MovieDetails({ movieId, onClose }: MovieDetailsProps) {
                 </div>
 
                 <div className="flex items-center gap-4 pt-4">
-                   <button className="flex items-center gap-3 bg-secondary text-on-secondary px-8 py-4 rounded-full text-[10px] font-bold tracking-widest uppercase hover:brightness-110 transition-all active:scale-95 shadow-xl shadow-secondary/10">
-                      <Play className="w-4 h-4 fill-current" /> Watch Trailer
+                   <button className="px-12 py-4 bg-primary text-on-primary text-[10px] font-bold tracking-widest uppercase rounded-full hover:scale-105 transition-transform shadow-xl shadow-primary/10">
+                      Add to List
                    </button>
                    <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white/5 transition-all">
                       <Plus className="w-5 h-5" />
                    </button>
                 </div>
+
               </div>
             </div>
           </>

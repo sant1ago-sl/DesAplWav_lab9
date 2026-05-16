@@ -4,9 +4,10 @@ import HomeGallery from './components/HomeGallery'
 
 async function getPopularMovies() {
   try {
-    const res = await fetch('https://www.omdbapi.com/?apikey=5fbbb434&s=marvel', {
+    const res = await fetch('https://www.omdbapi.com/?apikey=5fbbb434&s=noir', {
       next: { revalidate: 3600 } // Cache results for 1 hour
     });
+
     const data = await res.json();
     return data.Search || [];
   } catch (error) {

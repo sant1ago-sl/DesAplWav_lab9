@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Search, Play, ChevronLeft, ChevronRight, Ticket, ArrowRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Ticket, ArrowRight, Play } from 'lucide-react'
 import MovieCard from './MovieCard'
 import MovieDetails from './MovieDetails'
 import { cn } from '@/lib/utils'
@@ -19,11 +19,21 @@ interface HomeGalleryProps {
   initialMovies: Movie[];
 }
 
+const GENRES = [
+  { id: 'all', name: 'All Masterpieces', query: 'marvel' },
+  { id: 'noir', name: 'Film Noir', query: 'detective' },
+  { id: 'sci-fi', name: 'Sci-Fi', query: 'interstellar' },
+  { id: 'action', name: 'Action', query: 'john wick' },
+  { id: 'drama', name: 'Drama', query: 'godfather' }
+]
+
 export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Movie[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedGenre, setSelectedGenre] = useState('all')
+  const [genreMovies, setGenreMovies] = useState<Movie[]>(initialMovies)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   // Search logic (Debounced)
@@ -54,6 +64,29 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
     return () => clearTimeout(timer)
   }, [query])
 
+  // Genre logic
+  useEffect(() => {
+    if (selectedGenre === 'all') {
+      setGenreMovies(initialMovies)
+      return
+    }
+
+    const fetchByGenre = async () => {
+      setLoading(true)
+      const genre = GENRES.find(g => g.id === selectedGenre)
+      try {
+        const response = await fetch(`https://www.omdbapi.com/?apikey=5fbbb434&s=${genre?.query}`)
+        const data = await response.json()
+        setGenreMovies(data.Search || [])
+      } catch (error) {
+        console.error('Genre fetch error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchByGenre()
+  }, [selectedGenre, initialMovies])
+
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const scrollAmount = 400;
@@ -69,9 +102,9 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
       <section className="relative h-screen w-full flex items-center px-8 md:px-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src={heroMovie?.Poster !== 'N/A' ? heroMovie?.Poster : "https://images.unsplash.com/photo-1616530940355-351fabd9524b?auto=format&fit=crop&q=80&w=2000"} 
+            src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=2000" 
             alt="Hero Cinematic"
-            className="w-full h-full object-cover grayscale-[0.2] contrast-125 brightness-[0.4]"
+            className="w-full h-full object-cover grayscale-[0.4] contrast-125 brightness-[0.3]"
           />
           <div className="absolute inset-0 cinematic-gradient" />
         </div>
@@ -129,54 +162,75 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
         </div>
       </section>
 
-      {/* Search & Results Section (CSR) */}
+      {/* Genres & Search Section */}
       <section id="search-section" className="py-32 px-8 md:px-16 scroll-mt-20">
-        <div className="max-w-3xl mx-auto mb-20 text-center">
-            <span className="text-[10px] font-bold tracking-widest text-primary mb-3 block uppercase">Global Archive</span>
-            <h2 className="font-serif text-3xl md:text-5xl text-white font-bold tracking-tight mb-12">Search Masterpieces</h2>
-            
-            <div className="relative group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
-                <input 
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search for titles, directors, genres..."
-                    className="w-full bg-white/5 border border-white/10 focus:border-primary/50 rounded-2xl py-6 pl-16 pr-6 text-white placeholder:text-white/20 outline-none transition-all text-lg font-light"
-                />
-                {loading && (
-                    <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/10 border-t-primary"></div>
-                    </div>
-                )}
+        <div className="max-w-4xl mx-auto mb-20">
+            <div className="text-center mb-16">
+                <span className="text-[10px] font-bold tracking-widest text-primary mb-3 block uppercase">Curated Collections</span>
+                <h2 className="font-serif text-3xl md:text-5xl text-white font-bold tracking-tight mb-12">Browse by Genre</h2>
+                
+                {/* Genre Pills */}
+                <div className="flex flex-wrap justify-center gap-4 mb-16">
+                    {GENRES.map((genre) => (
+                        <button
+                            key={genre.id}
+                            onClick={() => setSelectedGenre(genre.id)}
+                            className={cn(
+                                "px-8 py-3 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border",
+                                selectedGenre === genre.id 
+                                    ? "bg-primary text-on-primary border-primary shadow-lg shadow-primary/20" 
+                                    : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
+                            )}
+                        >
+                            {genre.name}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="relative group max-w-2xl mx-auto">
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
+                    <input 
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Or search by title..."
+                        className="w-full bg-white/5 border border-white/10 focus:border-primary/50 rounded-2xl py-6 pl-16 pr-6 text-white placeholder:text-white/20 outline-none transition-all text-lg font-light"
+                    />
+                    {loading && (
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/10 border-t-primary"></div>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
 
-        <AnimatePresence>
-            {searchResults.length > 0 ? (
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8"
-                >
-                    {searchResults.map((movie) => (
-                        <MovieCard 
-                            key={movie.imdbID} 
-                            movie={movie} 
-                            onClick={(id) => setSelectedId(id)}
-                        />
-                    ))}
-                </motion.div>
-            ) : query.length >= 3 && !loading && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.02]">
-                    <p className="text-white/40 text-sm font-light uppercase tracking-widest">No results found for "{query}"</p>
-                </motion.div>
-            )}
+        <AnimatePresence mode="wait">
+            <motion.div 
+                key={query ? 'search' : selectedGenre}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8"
+            >
+                {(query ? searchResults : genreMovies).map((movie) => (
+                    <MovieCard 
+                        key={movie.imdbID} 
+                        movie={movie} 
+                        onClick={(id) => setSelectedId(id)}
+                    />
+                ))}
+                {(query ? searchResults : genreMovies).length === 0 && !loading && (
+                    <div className="col-span-full text-center py-20 border border-white/5 rounded-3xl bg-white/[0.02]">
+                        <p className="text-white/40 text-sm font-light uppercase tracking-widest">No masterpieces found in this category</p>
+                    </div>
+                )}
+            </motion.div>
         </AnimatePresence>
       </section>
 
-      {/* Now Showing Section (SSR Trending) */}
-      {!query && (
+      {/* Trending Section (Horizontal Scroll) */}
+      {!query && selectedGenre === 'all' && (
         <section className="py-32 border-t border-white/5">
             <div className="px-8 md:px-16 flex justify-between items-end mb-12">
             <div>
@@ -234,6 +288,7 @@ export default function HomeGallery({ initialMovies }: HomeGalleryProps) {
       <AnimatePresence>
         {selectedId && (
             <motion.div
+                key="modal-container"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
